@@ -1,6 +1,7 @@
 import app from './app'
+import { configs } from './config/_config'
 
-const PORT = process.env.PORT || 3000
+const PORT = configs.PORT || 3000
 
 function start() {
   app.listen(PORT, () => {
