@@ -1,0 +1,23 @@
+{
+  "name": "04-elib-apis",
+  "version": "1.0.0",
+  "description": "A project to boost the confidence and put all the learnings of BE in this project",
+  "keywords": [
+    "express",
+    "auth"
+  ],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.ts",
+    "start": "node server.ts"
+  },
+  "dependencies": {
+    "@types/node": "^24.2.1",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
