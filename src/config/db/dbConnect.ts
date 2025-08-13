@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
+import { configs } from '../_config'
 
 async function connectDB() {
-  await mongoose
+  await mongoose(configs.)
 }
