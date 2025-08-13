@@ -16,24 +16,35 @@ mongoose.connection.on('disconnected', () => {
 mongoose.connection.on('reconnected', () => {
   console.log('MongoDB reconnected')
 })
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  await mongoose.connection.close()
+  console.log('MongoDB connection closed on app termination')
+  process.exit(0)
+})
+
+let isConnected = false
 
 async function connectDB() {
+  if (isConnected) return mongoose
+
   try {
-    mongoose.connection.on('connected', () => {
-      console.log('Connected to DB successfully!')
+    const conn = await mongoose.connect(configs.MONGO_URI as string, {
+      // tweak as you like
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      autoIndex: process.env.NODE_ENV !== 'production',
+      dbName: 'e-library' // if your URI doesn't include it
     })
 
-    //   In future if we get any error
-    mongoose.connection.on('error', () => {
-      console.log('Error in connecting to the database')
-    })
-    await mongoose.connect(configs.MONGO_URI as string)
+    isConnected = true
+    console.log(`Connected to DB successfully: ${conn.connection.host}`)
+    return conn
   } catch (error) {
-    console.log('Failed to establish database connection', error)
-
-    //   Stop the application (server), if we fail to connect to the databse
+    console.error('Failed to establish database connection', error)
+    // In long-running servers, exiting is fine (nodemon/PM2 will restart).
+    // In serverless, don't call process.exit().
     process.exit(1)
   }
 }
-
 export default connectDB
