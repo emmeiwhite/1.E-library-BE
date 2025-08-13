@@ -1,6 +1,22 @@
 import mongoose from 'mongoose'
 import { configs } from '../_config'
 
+// optional: helpful in dev
+if (process.env.NODE_ENV !== 'production') {
+  mongoose.set('debug', true)
+}
+
+// Register runtime listeners ONCE (module scope)
+mongoose.connection.on('error', err => {
+  console.error('MongoDB runtime error:', err)
+})
+mongoose.connection.on('disconnected', () => {
+  console.warn('MongoDB disconnected')
+})
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB reconnected')
+})
+
 async function connectDB() {
   try {
     mongoose.connection.on('connected', () => {
