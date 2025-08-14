@@ -1,11 +1,13 @@
 import express, { NextFunction, Request, Response } from 'express'
-import { HttpError } from 'http-errors'
+import createHttpError, { HttpError } from 'http-errors'
 import { configs } from './config/_config'
 
 const app = express()
 
 // Routes: https Methods ---> GET, POST, PUT, PATCH, DELETE
 app.get('/', (req, res, next) => {
+  const error = createHttpError(400, 'something went wrong')
+  throw error
   res.json({ message: 'Welcome to e-library apis' })
 })
 
