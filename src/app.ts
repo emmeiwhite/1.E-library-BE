@@ -1,8 +1,11 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 
 const app = express()
 
-console.log('app.js file')
+// Global Error Handler
+app.use((err, req: Request, res: Response, next: NextFunction) => {
+  const statusCode = err.statusCode || 500
+})
 
 export default app
 
