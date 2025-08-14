@@ -4,6 +4,11 @@ import { configs } from './config/_config'
 
 const app = express()
 
+// Routes: https Methods ---> GET, POST, PUT, PATCH, DELETE
+app.get('/', (req, res, next) => {
+  res.json({ message: 'Welcome to e-library apis' })
+})
+
 // Global Error Handler
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.statusCode || 500
