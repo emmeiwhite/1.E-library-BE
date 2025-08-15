@@ -22,9 +22,15 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     return next(error)
   }
 
-  // 3. Store user in the Database: hashed password
+  // 3. Store user in the Database: hashed password with salted
 
-  await bcrypt.hash(password)
+  const hashedPassword = await bcrypt.hash(password, 10)
+
+  const newUser = await User.create({
+    name,
+    email,
+    password: hashedPassword
+  })
 
   res.status(201).json({ message: 'User created successfully!' })
 }
