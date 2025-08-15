@@ -1,7 +1,10 @@
 import { Response, Request, NextFunction } from 'express'
 import createHttpError from 'http-errors'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
 import User from '../models/User'
+import { configs } from '../config/_config'
 
 // 1. Create User
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -32,5 +35,11 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     password: hashedPassword
   })
 
-  res.status(201).json({ message: 'User created successfully!' })
+  // 4. Token Generation (Very Important). JWT token
+
+  const token = jwt.sign({ userId: newUser._id, email: newUser.email }, configs.JWT_SECRET, {
+    expiresIn: '1h'
+  })
+
+  res.status(201).json({ token })
 }
