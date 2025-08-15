@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from 'express'
 import createHttpError from 'http-errors'
+import bcrypt from 'bcrypt'
 import User from '../models/User'
 
 // 1. Create User
@@ -22,6 +23,8 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 
   // 3. Store user in the Database: hashed password
+
+  await bcrypt.hash(password)
 
   res.status(201).json({ message: 'User created successfully!' })
 }
