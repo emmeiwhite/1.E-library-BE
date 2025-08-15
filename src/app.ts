@@ -3,6 +3,7 @@ import errorHandler from './middlewares/globalErrorHandler'
 import userRouter from './routes/userRouter'
 
 const app = express()
+app.use(express.json()) // To parse req.body
 
 // A) Register the userRouter
 app.use('/api/users', userRouter)
