@@ -25,5 +25,6 @@ const userSchema = new mongoose.Schema<User>(
   { timestamps: true }
 )
 
-const User = mongoose.model('User', userSchema)
+// users ---> collection name will be automatically created
+const User = mongoose.model<User>('User', userSchema)
 export default User
