@@ -21,5 +21,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     return next(error)
   }
 
+  // 3. Store user in the Database: hashed password
+
   res.status(201).json({ message: 'User created successfully!' })
 }
