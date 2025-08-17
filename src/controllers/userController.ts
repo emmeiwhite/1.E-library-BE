@@ -26,7 +26,6 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   }
 
   // 3. Store user in the Database: hashed password with salted
-
   const hashedPassword = await bcrypt.hash(password, 10)
 
   const newUser = await User.create({
@@ -36,10 +35,13 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   })
 
   // 4. Token Generation (Very Important). JWT token
-
-  const token = jwt.sign({ userId: newUser._id, email: newUser.email }, configs.JWT_SECRET, {
-    expiresIn: '1h'
-  })
+  const token = jwt.sign(
+    { userId: newUser._id, email: newUser.email },
+    configs.JWT_SECRET as string,
+    {
+      expiresIn: '1h'
+    }
+  )
 
   res.status(201).json({ token })
 }
