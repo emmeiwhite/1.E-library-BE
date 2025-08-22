@@ -92,5 +92,13 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     return next(createHttpError(500, 'Error while comparing password'))
   }
 
-  res.status(201).json({ message: 'User Logged in' })
+  try {
+    const token = jwt.sign({ userId: user._id, email: user.email }, configs.JWT_SECRET as string, {
+      expiresIn: '1h'
+    })
+
+    res.status(201).json({ token, message: 'User loggen in successfully' })
+  } catch (error) {
+    return next(createHttpError(500, 'Error while signing the JWT token'))
+  }
 }
