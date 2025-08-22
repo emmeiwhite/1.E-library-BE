@@ -81,5 +81,16 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     return next(createHttpError(500, 'Error while getting user'))
   }
 
+  // 3. Compare password with DB password
+
+  try {
+    const isPasswordMatch = await bcrypt.compare(password, user.password)
+    if (!isPasswordMatch) {
+      return next(createHttpError(400, 'Password is incorrect'))
+    }
+  } catch (error) {
+    return next(createHttpError(500, 'Error while comparing password'))
+  }
+
   res.status(201).json({ message: 'User Logged in' })
 }
