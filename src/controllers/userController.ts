@@ -62,5 +62,5 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 // 2. Login User
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
-  res.json({ message: 'User Logged in' })
+  res.status(201).json({ message: 'User Logged in' })
 }
