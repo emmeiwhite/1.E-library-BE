@@ -18,30 +18,44 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
   // 2. Check whether the email exist in the database
 
-  const user = await User.findOne({ email })
+  try {
+    const user = await User.findOne({ email })
 
-  if (user) {
-    const error = createHttpError(400, 'User already exist with this email ')
-    return next(error)
+    if (user) {
+      const error = createHttpError(400, 'User already exist with this email ')
+      return next(error)
+    }
+  } catch (error) {
+    return next(createHttpError(500, 'Error while getting user'))
   }
 
   // 3. Store user in the Database: hashed password with salted
   const hashedPassword = await bcrypt.hash(password, 10)
 
-  const newUser = await User.create({
-    name,
-    email,
-    password: hashedPassword
-  })
+  let newUser: User
+  try {
+    newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword
+    })
+  } catch (error) {
+    return next(createHttpError(500, 'Error while creating user.'))
+  }
 
   // 4. Token Generation (Very Important). JWT token
-  const token = jwt.sign(
-    { userId: newUser._id, email: newUser.email },
-    configs.JWT_SECRET as string,
-    {
-      expiresIn: '1h'
-    }
-  )
 
-  res.status(201).json({ token })
+  try {
+    const token = jwt.sign(
+      { userId: newUser._id, email: newUser.email },
+      configs.JWT_SECRET as string,
+      {
+        expiresIn: '1h'
+      }
+    )
+
+    res.status(201).json({ token })
+  } catch (error) {
+    return next(createHttpError(500, 'Error while signing the JWT token'))
+  }
 }
