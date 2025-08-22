@@ -62,5 +62,12 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 // 2. Login User
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  // 1. Always validate data coming from the Client
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    return next(createHttpError(400, 'Provide email & password'))
+  }
+
   res.status(201).json({ message: 'User Logged in' })
 }
