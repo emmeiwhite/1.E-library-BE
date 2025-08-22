@@ -59,3 +59,8 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     return next(createHttpError(500, 'Error while signing the JWT token'))
   }
 }
+
+// 2. Login User
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  res.json({ message: 'User Logged in' })
+}
