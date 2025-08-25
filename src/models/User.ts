@@ -1,11 +1,6 @@
 import mongoose from 'mongoose'
+import type { User } from '../types/types'
 
-type User = {
-  _id: string
-  name: string
-  email: string
-  password: string
-}
 const userSchema = new mongoose.Schema<User>(
   {
     name: {
