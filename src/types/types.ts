@@ -15,3 +15,5 @@ export type Book = {
   createAt: Date
   updatedAt: Date
 }
+
+// Relationship:One User → Many Books
