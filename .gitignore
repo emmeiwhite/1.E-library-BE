@@ -137,3 +137,8 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# local uploads need not be pushed to the git due to large size:
+
+/public/data/uploads
