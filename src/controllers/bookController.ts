@@ -16,7 +16,7 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
 
   console.log('mimetype :', coverImageMimeType)
 
-  let fileName = req.files.file[0].filename
+  let fileName = req.files.coverImage[0].filename
 
   let filePath = path.resolve(__dirname, '../../public/data/uploads', fileName)
   // So filePath is basically the path in our server which cloudinary uses to take our files and upload onto the cloudinary server
