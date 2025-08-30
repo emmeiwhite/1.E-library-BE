@@ -29,14 +29,19 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   })
 
   /** 2. Uploading PDF */
-  let bookFileName = req.files.file[0].fieldname
+  let bookFileName = req.files.file[0].filename
   let bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookFileName)
+  try {
+    const pdfUploadResult = await cloudinary.uploader.upload(bookFilePath, {
+      resource_type: 'raw',
+      filename_override: bookFileName,
+      folder: 'book-pdfs',
+      format: 'pdf'
+    })
+    console.log(pdfUploadResult)
+  } catch (error) {
+    console.log(error)
+  }
 
-  const pdfUploadResult = await cloudinary.uploader.upload(bookFilePath, {
-    resource_type: 'raw',
-    filename_override: bookFileName,
-    folder: 'book-pdfs',
-    format: 'pdf'
-  })
   res.send({ message: 'Testing' })
 }
