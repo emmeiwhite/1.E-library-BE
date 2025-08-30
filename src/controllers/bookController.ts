@@ -11,6 +11,7 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
     return next(createHttpError(400, 'Cover image is required'))
   }
 
+  /** 1. Uploading coverImage */
   const coverImage = (req.files as { [fieldname: string]: Express.Multer.File[] }).coverImage[0]
   let coverImageMimeType = coverImage.mimetype.split('/')[1] // png
 
@@ -25,6 +26,17 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
     filename_override: fileName,
     folder: 'book-covers',
     format: coverImageMimeType
+  })
+
+  /** 2. Uploading PDF */
+  let bookFileName = req.files.file[0].fieldname
+  let bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookFileName)
+
+  const pdfUploadResult = await cloudinary.uploader.upload(bookFilePath, {
+    resource_type: 'raw',
+    filename_override: bookFileName,
+    folder: 'book-pdfs',
+    format: 'pdf'
   })
   res.send({ message: 'Testing' })
 }
