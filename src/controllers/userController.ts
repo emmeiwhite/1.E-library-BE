@@ -102,3 +102,17 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     return next(createHttpError(500, 'Error while signing the JWT token'))
   }
 }
+
+// 3. Get All users
+export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await User.find({})
+    console.log(users)
+    res.json({
+      message: 'users fetched successfully',
+      users
+    })
+  } catch (error) {
+    return next(createHttpError(500, 'Error while fetching users'))
+  }
+}
