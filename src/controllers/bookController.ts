@@ -2,9 +2,16 @@ import { Response, Request, NextFunction } from 'express'
 import createHttpError from 'http-errors'
 import cloudinary from '../config/cloudinary'
 import path from 'node:path'
+import Book from '../models/Book'
 
 // We'll need to perform all the CRUD Operations on Book itself
 export const createBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, author, genre } = req.body
+
+  if (!title || !genre) {
+    return next(createHttpError(400, 'title, genre required'))
+  }
+
   console.log('Files', req.files)
 
   if (!req.files || !('coverImage' in req.files)) {
@@ -14,7 +21,6 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   /** 1. Uploading coverImage */
   const coverImage = (req.files as { [fieldname: string]: Express.Multer.File[] }).coverImage[0]
   let coverImageMimeType = coverImage.mimetype.split('/')[1] // png
-
   console.log('mimetype :', coverImageMimeType)
 
   let fileName = req.files.coverImage[0].filename
@@ -22,26 +28,46 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   let filePath = path.resolve(__dirname, '../../public/data/uploads', fileName)
   // So filePath is basically the path in our server which cloudinary uses to take our files and upload onto the cloudinary server
 
-  const uploadResult = await cloudinary.uploader.upload(filePath, {
-    filename_override: fileName,
-    folder: 'book-covers',
-    format: coverImageMimeType
-  })
+  let uploadBookResult
+  try {
+    uploadBookResult = await cloudinary.uploader.upload(filePath, {
+      filename_override: fileName,
+      folder: 'book-covers',
+      format: coverImageMimeType
+    })
+
+    console.log(uploadBookResult.url)
+  } catch (error) {
+    console.log(error)
+    next(createHttpError(500, 'Error while uploading book coverImage'))
+  }
 
   /** 2. Uploading PDF */
   let bookFileName = req.files.file[0].filename
   let bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookFileName)
+  let pdfUploadResult
   try {
-    const pdfUploadResult = await cloudinary.uploader.upload(bookFilePath, {
+    pdfUploadResult = await cloudinary.uploader.upload(bookFilePath, {
       resource_type: 'raw',
       filename_override: bookFileName,
       folder: 'book-pdfs',
       format: 'pdf'
     })
-    console.log(pdfUploadResult)
+    console.log(pdfUploadResult.url)
   } catch (error) {
     console.log(error)
+    next(createHttpError(500, 'Error while uploading pdf'))
   }
 
-  res.send({ message: 'Testing' })
+  // After receving Book details (title, genre, author[handle in JWT], & 2 files --- urls), time to create the resource in DB
+
+  Book.create({
+    title,
+    genre,
+    author: '68a8a9611669653fd23d43b3',
+    coverImage: uploadBookResult?.secure_url,
+    file: pdfUploadResult?.secure_url
+  })
+
+  res.send({ message: 'Files Uploaded!' })
 }
