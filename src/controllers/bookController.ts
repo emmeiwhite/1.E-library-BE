@@ -8,12 +8,12 @@ import Book from '../models/Book'
 // We'll need to perform all the CRUD Operations on Book itself
 export const createBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, author, genre } = req.body
-
+  console.log('title: ', title)
   if (!title || !genre) {
     return next(createHttpError(400, 'title, genre required'))
   }
 
-  console.log('Files', req.files)
+  // console.log('Files', req.files)
 
   if (!req.files || !('coverImage' in req.files)) {
     return next(createHttpError(400, 'Cover image is required'))
@@ -25,6 +25,7 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   console.log('mimetype :', coverImageMimeType)
 
   let fileName = req.files.coverImage[0].filename
+  console.log('Cover Image file name', fileName)
 
   let filePath = path.resolve(__dirname, '../../public/data/uploads', fileName)
   // So filePath is basically the path in our server which cloudinary uses to take our files and upload onto the cloudinary server
@@ -45,6 +46,8 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
 
   /** 2. Uploading PDF */
   let bookFileName = req.files.file[0].filename
+
+  console.log('Book File Name pdf', bookFileName)
   let bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookFileName)
   let pdfUploadResult
   try {
@@ -70,9 +73,10 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
     file: pdfUploadResult?.secure_url
   })
 
+  console.log(newBook)
   // DELETE Temp file on Server --- Use Node's fs module
   await fs.promises.unlink(filePath)
-  await fs.promises.unlink(bookFileName)
+  await fs.promises.unlink(bookFilePath)
 
-  res.send({ message: 'Files Uploaded!' })
+  res.status(201).json({ bookID: 'Files Uploaded!' })
 }
