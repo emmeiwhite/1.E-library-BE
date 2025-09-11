@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from 'express'
 import createHttpError from 'http-errors'
+import fs from 'node:fs'
 import cloudinary from '../config/cloudinary'
 import path from 'node:path'
 import Book from '../models/Book'
@@ -61,13 +62,17 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
 
   // After receving Book details (title, genre, author[handle in JWT], & 2 files --- urls), time to create the resource in DB
 
-  Book.create({
+  const newBook = Book.create({
     title,
     genre,
     author: '68a8a9611669653fd23d43b3',
     coverImage: uploadBookResult?.secure_url,
     file: pdfUploadResult?.secure_url
   })
+
+  // DELETE Temp file on Server --- Use Node's fs module
+  await fs.promises.unlink(filePath)
+  await fs.promises.unlink(bookFileName)
 
   res.send({ message: 'Files Uploaded!' })
 }
