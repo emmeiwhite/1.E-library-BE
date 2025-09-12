@@ -185,3 +185,19 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
 
   res.json(updateBook)
 }
+
+/** 3. Get listOfBooks */
+
+export const listBooks = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Todo: Perform Pagination, since we should not fetch all the list of users
+    const books = await Book.find({})
+
+    res.json({
+      message: 'books fetched successfully',
+      books
+    })
+  } catch (error) {
+    return next(createHttpError(500, 'Cannot fetch the list of books'))
+  }
+}
