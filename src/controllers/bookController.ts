@@ -96,7 +96,19 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
     return next(createHttpError(400, 'title, genre required'))
   }
 
-  if (!req.files || !('coverImage' in req.files)) {
-    return next(createHttpError(400, 'Cover image is required'))
+  const bookId = req.params.bookId
+
+  // First we'll check whether the book exists in the database
+  const book = await Book.findOne({ _id: bookId })
+
+  if (!book) {
+    return next(createHttpError(404, 'Book not found'))
+  }
+
+  // Check Access - The one updating the book is correct uploader of the book
+
+  const _req = req as AuthRequest
+  if (book.author.toString() !== _req.userId) {
+    return next(createHttpError(403, 'You are not authorized to update the book of other User'))
   }
 }
