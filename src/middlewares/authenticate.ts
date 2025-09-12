@@ -16,16 +16,17 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
   // parse the token
 
-  const parsedToken = token.split(' ')[1]
+  try {
+    const parsedToken = token.split(' ')[1]
+    // Decode the token
+    const decoded = jwt.verify(parsedToken, configs.JWT_SECRET as string)
 
-  // Decode the token
-  const decoded = jwt.verify(parsedToken, configs.JWT_SECRET as string)
-
-  console.log(`decoded`, decoded)
-
-  const _req = req as AuthRequest
-  _req.userId = decoded.sub as string
-  next() // pass to the next handler
+    const _req = req as AuthRequest
+    _req.userId = decoded.sub as string
+    next() // pass to the next handler
+  } catch (error) {
+    next(createHttpError(401, 'Token Expired!'))
+  }
 }
 
 export default authenticate
