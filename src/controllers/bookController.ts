@@ -6,9 +6,9 @@ import path from 'node:path'
 import Book from '../models/Book'
 import { AuthRequest } from '../middlewares/authenticate'
 
-// We'll need to perform all the CRUD Operations on Book itself
+/** 1. Create Book */
 export const createBook = async (req: Request, res: Response, next: NextFunction) => {
-  const { title, author, genre } = req.body
+  const { title, genre } = req.body
   console.log('title: ', title)
   if (!title || !genre) {
     return next(createHttpError(400, 'title, genre required'))
@@ -85,5 +85,18 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   await fs.promises.unlink(filePath)
   await fs.promises.unlink(bookFilePath)
 
-  res.status(201).json({ bookID: 'Files Uploaded!' })
+  res.status(201).json({ bookID: _req.userId })
+}
+
+/** 2. Update Book */
+export const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, genre } = req.body
+
+  if (!title || !genre) {
+    return next(createHttpError(400, 'title, genre required'))
+  }
+
+  if (!req.files || !('coverImage' in req.files)) {
+    return next(createHttpError(400, 'Cover image is required'))
+  }
 }
