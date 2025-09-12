@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import cloudinary from '../config/cloudinary'
 import path from 'node:path'
 import Book from '../models/Book'
+import { AuthRequest } from '../middlewares/authenticate'
 
 // We'll need to perform all the CRUD Operations on Book itself
 export const createBook = async (req: Request, res: Response, next: NextFunction) => {
@@ -68,10 +69,13 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   // @ts-ignore
   console.log('useriD', req.userId)
 
+  // Typecast to fix the TS Error in Book.create({author:req.userId})
+  const _req = req as AuthRequest
+
   const newBook = Book.create({
     title,
     genre,
-    author: '68a8a9611669653fd23d43b3',
+    author: _req.userId,
     coverImage: uploadBookResult?.secure_url,
     file: pdfUploadResult?.secure_url
   })
