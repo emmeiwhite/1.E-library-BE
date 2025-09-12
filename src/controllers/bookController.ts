@@ -96,10 +96,10 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
     return next(createHttpError(400, 'title, genre required'))
   }
 
-  const bookId = req.params.bookId
+  const bookID = req.params.bookId
 
   // First we'll check whether the book exists in the database
-  const book = await Book.findOne({ _id: bookId })
+  const book = await Book.findOne({ _id: bookID })
 
   if (!book) {
     return next(createHttpError(404, 'Book not found'))
@@ -173,7 +173,7 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
 
   /** --- Query Database to update the Book --- */
   const updateBook = await Book.findOneAndUpdate(
-    { _id: bookId },
+    { _id: bookID },
     {
       title,
       genre,
