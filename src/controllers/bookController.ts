@@ -172,4 +172,16 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
   // Notice that we have now access to both secure_url's in completeCoverImage and completePdf
 
   /** --- Query Database to update the Book --- */
+  const updateBook = await Book.findOneAndUpdate(
+    { _id: bookId },
+    {
+      title,
+      genre,
+      coverImage: completeCoverImage ? completeCoverImage : book.coverImage,
+      file: completePdf ? completePdf : book.file
+    },
+    { new: true }
+  )
+
+  res.json(updateBook)
 }
