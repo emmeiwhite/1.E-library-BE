@@ -46,13 +46,9 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   // 4. Token Generation (Very Important). JWT token
 
   try {
-    const token = jwt.sign(
-      { userId: newUser._id, email: newUser.email },
-      configs.JWT_SECRET as string,
-      {
-        expiresIn: '1h'
-      }
-    )
+    const token = jwt.sign({ email: newUser.email }, configs.JWT_SECRET as string, {
+      expiresIn: '1h'
+    })
 
     res.status(201).json({ token })
   } catch (error) {
@@ -93,7 +89,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
   }
 
   try {
-    const token = jwt.sign({ userId: user._id, email: user.email }, configs.JWT_SECRET as string, {
+    const token = jwt.sign({ email: user.email }, configs.JWT_SECRET as string, {
       expiresIn: '1h'
     })
 
@@ -111,6 +107,21 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
     res.json({
       message: 'users fetched successfully',
       users
+    })
+  } catch (error) {
+    return next(createHttpError(500, 'Error while fetching users'))
+  }
+}
+
+// 4. Delete User
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  try {
+    const result = await User.deleteOne({ _id: id })
+    console.log(result)
+    res.json({
+      message: 'users deleted successfully',
+      id
     })
   } catch (error) {
     return next(createHttpError(500, 'Error while fetching users'))

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import createHttpError from 'http-errors'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import { configs } from '../config/_config'
 
 export interface AuthRequest extends Request {
@@ -24,7 +24,7 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
   console.log(`decoded`, decoded)
 
   const _req = req as AuthRequest
-  req.userId = decoded.userId
+  _req.userId = decoded.sub as string
   next() // pass to the next handler
 }
 
