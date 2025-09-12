@@ -106,9 +106,70 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
   }
 
   // Check Access - The one updating the book is correct uploader of the book
-
   const _req = req as AuthRequest
   if (book.author.toString() !== _req.userId) {
     return next(createHttpError(403, 'You are not authorized to update the book of other User'))
   }
+
+  /** 1. Now if User has sent a new coverImage to update, only in that case we have to update the coverImage  */
+
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] }
+
+  /** 1. Uploading coverImage */
+  let completeCoverImage: string | undefined = ''
+
+  if (files.coverImage) {
+    let fileName = files.coverImage[0].filename
+
+    let coverImageMimeType = files.coverImage[0].mimetype.split('/')[1] // png
+
+    let filePath = path.resolve(__dirname, '../../public/data/uploads', fileName)
+    // So filePath is basically the path in our server which cloudinary uses to take our files and upload onto the cloudinary server
+
+    let uploadBookResult
+    try {
+      uploadBookResult = await cloudinary.uploader.upload(filePath, {
+        filename_override: fileName,
+        folder: 'book-covers',
+        format: coverImageMimeType
+      })
+      console.log(uploadBookResult.secure_url)
+    } catch (error) {
+      console.log(error)
+      next(createHttpError(500, 'Error while uploading book coverImage'))
+    }
+
+    completeCoverImage = uploadBookResult?.secure_url
+    await fs.promises.unlink(filePath)
+  }
+
+  // Check if fileName exists (whether new pdf is sent by the User to be updated)
+
+  let completePdf: string | undefined = ''
+
+  if (files.file) {
+    const bookFileName = files.file[0].filename
+    const bookFilePath = path.resolve(__dirname, '../../public/data/uploads', bookFileName)
+
+    let pdfUploadResult
+    try {
+      pdfUploadResult = await cloudinary.uploader.upload(bookFilePath, {
+        resource_type: 'raw',
+        filename_override: bookFileName,
+        folder: 'book-pdfs',
+        format: 'pdf'
+      })
+      console.log(pdfUploadResult.url)
+    } catch (error) {
+      console.log(error)
+      next(createHttpError(500, 'Error while uploading pdf'))
+    }
+    completePdf = pdfUploadResult?.secure_url
+
+    await fs.promises.unlink(bookFilePath)
+  }
+
+  // Notice that we have now access to both secure_url's in completeCoverImage and completePdf
+
+  /** --- Query Database to update the Book --- */
 }
