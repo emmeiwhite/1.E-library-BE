@@ -46,7 +46,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
   // 4. Token Generation (Very Important). JWT token
 
   try {
-    const token = jwt.sign({ email: newUser.email }, configs.JWT_SECRET as string, {
+    const token = jwt.sign({ sub: newUser._id }, configs.JWT_SECRET as string, {
       expiresIn: '1h'
     })
 
