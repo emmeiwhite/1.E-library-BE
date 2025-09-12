@@ -3,6 +3,10 @@ import createHttpError from 'http-errors'
 import jwt from 'jsonwebtoken'
 import { configs } from '../config/_config'
 
+export interface AuthRequest extends Request {
+  userId: string
+}
+
 const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')
 
@@ -19,8 +23,9 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
 
   console.log(`decoded`, decoded)
 
+  const _req = req as AuthRequest
+  req.userId = decoded.userId
   next() // pass to the next handler
-  //   req.userId = decoded.sub
 }
 
 export default authenticate
