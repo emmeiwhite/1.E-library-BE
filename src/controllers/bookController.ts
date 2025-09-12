@@ -65,6 +65,9 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
 
   // After receving Book details (title, genre, author[handle in JWT], & 2 files --- urls), time to create the resource in DB
 
+  // @ts-ignore
+  console.log('useriD', req.userId)
+
   const newBook = Book.create({
     title,
     genre,
