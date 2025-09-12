@@ -93,7 +93,7 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
   const { title, genre } = req.body
 
   if (!title || !genre) {
-    return next(createHttpError(400, 'title, genre required'))
+    return next(createHttpError(400, 'No changes to update'))
   }
 
   const bookID = req.params.bookId
@@ -175,8 +175,8 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
   const updateBook = await Book.findOneAndUpdate(
     { _id: bookID },
     {
-      title,
-      genre,
+      title: title ? title : book.title,
+      genre: genre ? genre : book.genre,
       coverImage: completeCoverImage ? completeCoverImage : book.coverImage,
       file: completePdf ? completePdf : book.file
     },
