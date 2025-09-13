@@ -47,7 +47,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
   try {
     const token = jwt.sign({ sub: newUser._id }, configs.JWT_SECRET as string, {
-      expiresIn: '1h'
+      expiresIn: '24h'
     })
 
     res.status(201).json({ token })

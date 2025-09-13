@@ -55,6 +55,6 @@ bookRouter.get('/', listBooks)
 bookRouter.get('/:bookId', getSingleBook)
 
 // 5. Delete Book
-bookRouter.get('/:bookId', authenticate, deleteBook)
+bookRouter.delete('/:bookId', authenticate, deleteBook)
 
 export default bookRouter

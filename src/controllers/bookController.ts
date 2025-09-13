@@ -85,7 +85,7 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   await fs.promises.unlink(filePath)
   await fs.promises.unlink(bookFilePath)
 
-  res.status(201).json({ bookID: _req.userId })
+  res.status(201).json({ book: newBook })
 }
 
 /** 2. Update Book */
@@ -224,6 +224,7 @@ export const getSingleBook = async (req: Request, res: Response, next: NextFunct
 /** 5. Delete Single Book */
 export const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
   const { bookId } = req.params
+
   try {
     // Todo: Perform Pagination, since we should not fetch all the list of users
     const book = await Book.findOne({ _id: bookId })
@@ -238,8 +239,34 @@ export const deleteBook = async (req: Request, res: Response, next: NextFunction
       return next(createHttpError(403, 'You are not authorized to update the book of other User'))
     }
 
+    // Now first delete the files associated with the book on Cloudinary
+    /** await cloudinary.uploader.destroy(public_id); 
+
+    So, We require public_id and we'll get the public_id from our secure_url last part.
+    For CoverImage it looks like this:  "book-covers/jeaangub4aplyggmqicm" & we can get it from the public_url
+
+     */
+
+    // 1. coverImage public_id derivation: book-covers/jeaangub4aplyggmqicm
+    const coverImageSplits: string[] = book.coverImage.split('/')
+    console.log(coverImageSplits)
+
+    const imagelength = coverImageSplits.length
+    const coverImagePublicID =
+      coverImageSplits[imagelength - 2] + '/' + coverImageSplits[imagelength - 1].split('.')[0]
+
+    console.log('coverImagePublicID:', coverImagePublicID)
+    // await cloudinary.uploader.destroy()
+
+    // 2. pdf public_id derivation: book-pdfs/kuj1uzmnljkujp5muouk.pdf
+    const pdfSplits = book.file.split('/')
+    const pdfArrayLength = pdfSplits.length
+    const pdfPublicID = pdfSplits[pdfArrayLength - 2] + '/' + pdfSplits[pdfArrayLength - 1]
+
+    console.log('pdfPublicID:', pdfPublicID)
+
     res.json({
-      message: 'book fetched successfully',
+      message: 'Book deletion under process!',
       book
     })
   } catch (error) {
