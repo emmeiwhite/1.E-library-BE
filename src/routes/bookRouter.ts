@@ -1,5 +1,5 @@
 import express from 'express'
-import { createBook, updateBook, listBooks } from '../controllers/bookController'
+import { createBook, updateBook, listBooks, getSingleBook } from '../controllers/bookController'
 import multer from 'multer'
 import path from 'node:path'
 import authenticate from '../middlewares/authenticate'
@@ -21,7 +21,6 @@ const upload = multer({
 })
 
 // 1. /api/books
-
 bookRouter.post(
   '/',
   authenticate,
@@ -33,7 +32,6 @@ bookRouter.post(
 )
 
 // 2. Update Book /api/books/:id
-
 bookRouter.patch(
   '/:bookId',
   authenticate,
@@ -46,4 +44,8 @@ bookRouter.patch(
 
 // 3. List books GET /api/books
 bookRouter.get('/', listBooks)
+
+// 4. Get Single Book
+bookRouter.get('/:bookId', getSingleBook)
+
 export default bookRouter

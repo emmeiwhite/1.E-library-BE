@@ -187,7 +187,6 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
 }
 
 /** 3. Get listOfBooks */
-
 export const listBooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Todo: Perform Pagination, since we should not fetch all the list of users
@@ -199,5 +198,25 @@ export const listBooks = async (req: Request, res: Response, next: NextFunction)
     })
   } catch (error) {
     return next(createHttpError(500, 'Cannot fetch the list of books'))
+  }
+}
+
+/** 4. Get Single Book */
+export const getSingleBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { bookId } = req.params
+  try {
+    // Todo: Perform Pagination, since we should not fetch all the list of users
+    const book = await Book.findOne({ _id: bookId })
+
+    if (!book) {
+      return next(createHttpError(404, 'Book not found'))
+    }
+
+    res.json({
+      message: 'book fetched successfully',
+      book
+    })
+  } catch (error) {
+    return next(createHttpError(500, 'Cannot find book'))
   }
 }
