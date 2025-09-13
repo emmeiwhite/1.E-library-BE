@@ -220,3 +220,29 @@ export const getSingleBook = async (req: Request, res: Response, next: NextFunct
     return next(createHttpError(500, 'Cannot find book'))
   }
 }
+
+/** 5. Delete Single Book */
+export const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { bookId } = req.params
+  try {
+    // Todo: Perform Pagination, since we should not fetch all the list of users
+    const book = await Book.findOne({ _id: bookId })
+
+    if (!book) {
+      return next(createHttpError(404, 'Book not found'))
+    }
+
+    // Check Access - The one updating the book is correct uploader of the book
+    const _req = req as AuthRequest
+    if (book.author.toString() !== _req.userId) {
+      return next(createHttpError(403, 'You are not authorized to update the book of other User'))
+    }
+
+    res.json({
+      message: 'book fetched successfully',
+      book
+    })
+  } catch (error) {
+    return next(createHttpError(500, 'Cannot find book'))
+  }
+}
