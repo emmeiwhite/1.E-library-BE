@@ -72,7 +72,7 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
   // Typecast to fix the TS Error in Book.create({author:req.userId})
   const _req = req as AuthRequest
 
-  const newBook = Book.create({
+  const newBook = await Book.create({
     title,
     genre,
     author: _req.userId,
@@ -80,7 +80,7 @@ export const createBook = async (req: Request, res: Response, next: NextFunction
     file: pdfUploadResult?.secure_url
   })
 
-  console.log(newBook)
+  console.log('Book Created: ', newBook)
   // DELETE Temp file on Server --- Use Node's fs module
   await fs.promises.unlink(filePath)
   await fs.promises.unlink(bookFilePath)
