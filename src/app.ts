@@ -2,8 +2,15 @@ import express from 'express'
 import errorHandler from './middlewares/globalErrorHandler'
 import userRouter from './routes/userRouter'
 import bookRouter from './routes/bookRouter'
+import cors from 'cors'
 
 const app = express()
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000'
+  })
+)
 app.use(express.json()) // To parse req.body
 
 // A) Register the userRouter
