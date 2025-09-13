@@ -265,6 +265,17 @@ export const deleteBook = async (req: Request, res: Response, next: NextFunction
 
     console.log('pdfPublicID:', pdfPublicID)
 
+    // 3. delete both image and pdf from cloudinary
+
+    try {
+      await cloudinary.uploader.destroy(coverImagePublicID)
+      await cloudinary.uploader.destroy(pdfPublicID, {
+        resource_type: 'raw'
+      })
+    } catch (error) {
+      next(createHttpError(500, 'Could not delete the coverImage or pdf'))
+    }
+
     res.json({
       message: 'Book deletion under process!',
       book
