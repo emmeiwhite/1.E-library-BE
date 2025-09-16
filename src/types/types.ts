@@ -10,6 +10,7 @@ export type Book = {
   title: string
   author: User
   genre: string
+  description: string
   coverImage: string
   file: string
   createAt: Date

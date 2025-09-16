@@ -190,7 +190,7 @@ export const updateBook = async (req: Request, res: Response, next: NextFunction
 export const listBooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Todo: Perform Pagination, since we should not fetch all the list of users
-    const books = await Book.find({})
+    const books = await Book.find().populate('author', 'name email')
 
     res.json({
       message: 'books fetched successfully',
@@ -206,7 +206,7 @@ export const getSingleBook = async (req: Request, res: Response, next: NextFunct
   const { bookId } = req.params
   try {
     // Todo: Perform Pagination, since we should not fetch all the list of users
-    const book = await Book.findOne({ _id: bookId })
+    const book = await Book.findOne({ _id: bookId }).populate('author', 'name email')
 
     if (!book) {
       return next(createHttpError(404, 'Book not found'))
